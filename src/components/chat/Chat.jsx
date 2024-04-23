@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
 
@@ -10,6 +10,12 @@ const Chat = () => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
+
+  const endRef = useRef(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   return (
     <div className="chat">
@@ -29,19 +35,44 @@ const Chat = () => {
       </div>
       <div className="center">
         <div className="message">
-            <img src="avatar.png" alt="" />
+          <img src="avatar.png" alt="" />
+          <div className="texts">
+            <p>Lorem ipsum dolor sit amet consectetur</p>
+            <span>1 min ago</span>
+          </div>
+        </div>
+        <div className="message">
+          <img src="avatar.png" alt="" />
+          <div className="texts">
+            <p>Lorem ipsum dolor sit amet consectetur</p>
+            <span>1 min ago</span>
+          </div>
+        </div>
+        <div className="message">
+          <img src="avatar.png" alt="" />
+          <div className="texts">
+            <p>Lorem ipsum dolor sit amet consectetur</p>
+            <span>1 min ago</span>
+          </div>
+        </div>
+        <div className="message">
+          <img src="avatar.png" alt="" />
           <div className="texts">
             <p>Lorem ipsum dolor sit amet consectetur</p>
             <span>1 min ago</span>
           </div>
         </div>
         <div className="message own">
-        <div className="texts">
-            <img src="https://res.cloudinary.com/muralienv/image/upload/v1712568823/avatars/g21ku6uk9zubvdj0gegl.jpg" alt="" />
+          <div className="texts">
+            <img
+              src="https://res.cloudinary.com/muralienv/image/upload/v1712568823/avatars/g21ku6uk9zubvdj0gegl.jpg"
+              alt=""
+            />
             <p>Lorem ipsum dolor sit amet consectetur</p>
             <span>1 min ago</span>
           </div>
         </div>
+        <div ref={endRef}></div>
       </div>
       <div className="bottom">
         <div className="icons">

@@ -186,7 +186,6 @@
 .center::-webkit-scrollbar-thumb {
   background-color: #0e082c;
   border-radius: 10px;
-  position: absolute;
 }
 
 .center::-webkit-scrollbar-thumb:hover {
