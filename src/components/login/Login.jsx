@@ -3,7 +3,10 @@ import "./login.css";
 import { toast } from "react-toastify";
 import upload from "../../lib/upload";
 import { auth, db } from "../../lib/firebase.js";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
 const Login = () => {
@@ -61,7 +64,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    toast.success("hello");
+    const formData = new FormData(e.target);
+    const { email, password } = Object.fromEntries(formData);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
