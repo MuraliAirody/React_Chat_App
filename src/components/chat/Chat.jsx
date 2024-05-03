@@ -1,29 +1,52 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
+import { db } from "../../lib/firebase";
+import { doc, onSnapshot } from "firebase/firestore";
+import { useUserStore } from "../../lib/userStore";
+import { useChatStore } from "../../lib/chatStore";
 
 const Chat = () => {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
+  const [chat, setChat] = useState();
+  const [img, setImg] = useState({
+    file: null,
+    url: "",
+  });
+
+  const { currentUser } = useUserStore();
+  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
+    useChatStore();
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
 
-  const endRef = useRef(null);
-
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
+      setChat(res.data());
+    });
+
+    return () => {
+      unSub();
+    };
+  }, [chatId]);
+
+  const endRef = useRef(null);
 
   return (
     <div className="chat">
       <div className="top">
         <div className="user">
-          <img src="./avatar.png" alt="" />
+          <img src={user?.avatar || "./avatar.png"} alt="" />
           <div className="texts">
-            <span>John</span>
+            <span>{user?.username}</span>
             <p>Lorem ipsum dolor, sit amet.</p>
           </div>
         </div>
@@ -34,44 +57,27 @@ const Chat = () => {
         </div>
       </div>
       <div className="center">
-        <div className="message">
-          <img src="avatar.png" alt="" />
-          <div className="texts">
-            <p>Lorem ipsum dolor sit amet consectetur</p>
-            <span>1 min ago</span>
+        {chat?.messages?.map((message) => (
+          <div
+            className={
+              message.senderId === currentUser?.id ? "message own" : "message"
+            }
+            key={message?.createAt}
+          >
+            <div className="texts">
+              {message.img && <img src={message.img} alt="" />}
+              <p>{message.text}</p>
+              <span>{format(message.createdAt.toDate())}</span>
+            </div>
           </div>
-        </div>
-        <div className="message">
-          <img src="avatar.png" alt="" />
-          <div className="texts">
-            <p>Lorem ipsum dolor sit amet consectetur</p>
-            <span>1 min ago</span>
+        ))}
+        {img.url && (
+          <div className="message own">
+            <div className="texts">
+              <img src={img.url} alt="" />
+            </div>
           </div>
-        </div>
-        <div className="message">
-          <img src="avatar.png" alt="" />
-          <div className="texts">
-            <p>Lorem ipsum dolor sit amet consectetur</p>
-            <span>1 min ago</span>
-          </div>
-        </div>
-        <div className="message">
-          <img src="avatar.png" alt="" />
-          <div className="texts">
-            <p>Lorem ipsum dolor sit amet consectetur</p>
-            <span>1 min ago</span>
-          </div>
-        </div>
-        <div className="message own">
-          <div className="texts">
-            <img
-              src="https://res.cloudinary.com/muralienv/image/upload/v1712568823/avatars/g21ku6uk9zubvdj0gegl.jpg"
-              alt=""
-            />
-            <p>Lorem ipsum dolor sit amet consectetur</p>
-            <span>1 min ago</span>
-          </div>
-        </div>
+        )}
         <div ref={endRef}></div>
       </div>
       <div className="bottom">
