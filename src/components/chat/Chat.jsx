@@ -132,7 +132,7 @@ const Chat = () => {
             className={
               message.senderId === currentUser?.id ? "message own" : "message"
             }
-            key={message.createAt}
+            key={message.createdAt}
           >
             <div className="texts">
               {message.img && <img src={message.img} alt="" />}
@@ -166,8 +166,14 @@ const Chat = () => {
         </div>
         <input
           type="text"
+          placeholder={
+            isCurrentUserBlocked || isReceiverBlocked
+              ? "You cannot send a message"
+              : "Type a message..."
+          }
           value={text}
           onChange={(e) => setText(e.target.value)}
+          disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
         <div className="emoji">
           <img
@@ -179,7 +185,11 @@ const Chat = () => {
             <EmojiPicker open={open} onEmojiClick={handleEmoji} />
           </div>
         </div>
-        <button className="sendButton" onClick={handleSend}>
+        <button
+          className="sendButton"
+          onClick={handleSend}
+          disabled={isCurrentUserBlocked || isReceiverBlocked}
+        >
           Send
         </button>
       </div>
